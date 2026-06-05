@@ -16,6 +16,8 @@ import { api } from '../services/api';
 
 const nav = [
 
+  { to: '/', label: 'Home' },
+
   { to: '/manager', label: 'Analytics', end: true },
 
   { to: '/manager/approvals', label: 'Customer Approvals' },
@@ -56,9 +58,13 @@ export default function ManagerDashboard() {
 
   const [busyId, setBusyId] = useState(null);
 
+  const [error, setError] = useState(null);
+
 
 
   const loadAnalytics = () => {
+
+    setError(null);
 
     Promise.all([
 
@@ -88,7 +94,13 @@ export default function ManagerDashboard() {
 
       })
 
-      .catch(console.error);
+      .catch((e) => {
+
+        console.error(e);
+
+        setError(e.message || 'Failed to load analytics data. Please check if the backend is running.');
+
+      });
 
   };
 
@@ -183,6 +195,20 @@ export default function ManagerDashboard() {
         <div className={`status-banner ${msg.type === 'error' ? 'status-error' : 'status-success'}`}>
 
           {msg.message}
+
+        </div>
+
+      )}
+
+
+
+      {error && (
+
+        <div className="status-banner status-error" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+          <span>{error}</span>
+
+          <button className="btn-secondary btn-sm" onClick={loadAnalytics} style={{ marginLeft: 12 }}>Retry</button>
 
         </div>
 

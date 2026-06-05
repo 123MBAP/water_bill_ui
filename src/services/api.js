@@ -83,6 +83,8 @@ export const api = {
     request(`/admin/cards/${cardId}/assign`, { method: 'PATCH', body: JSON.stringify({ user_id: userId }) }),
   adminSetCardActive: ({ cardId, is_active }) => request(`/admin/cards/${cardId}/active`, { method: 'PATCH', body: JSON.stringify({ is_active }) }),
   adminRechargeCard: ({ cardId, amount_rwf }) => request(`/admin/cards/${cardId}/recharge`, { method: 'POST', body: JSON.stringify({ amount_rwf }) }),
+  adminSetCardRfid: ({ cardId, rfid_uid }) => request(`/admin/cards/${cardId}/rfid`, { method: 'PATCH', body: JSON.stringify({ rfid_uid }) }),
+  adminPrepareCardScan: ({ cardId, deviceId }) => request(`/admin/cards/${cardId}/prepare-scan`, { method: 'PATCH', body: JSON.stringify({ deviceId }) }),
   adminDeleteCard: ({ cardId }) => request(`/admin/cards/${cardId}`, { method: 'DELETE' }),
 
   // Admin: devices
