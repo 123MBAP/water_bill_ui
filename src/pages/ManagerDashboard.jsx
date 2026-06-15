@@ -16,11 +16,11 @@ import { api } from '../services/api';
 
 const nav = [
 
-  { to: '/', label: 'Home' },
-
   { to: '/manager', label: 'Analytics', end: true },
 
   { to: '/manager/approvals', label: 'Customer Approvals' },
+
+  { to: '/manager/transactions', label: 'Transactions' },
 
 ];
 
@@ -55,6 +55,12 @@ export default function ManagerDashboard() {
   const [pending, setPending] = useState([]);
 
   const [msg, setMsg] = useState('');
+
+  const [transactions, setTransactions] = useState([]);
+
+  const [transactionCurrentPage, setTransactionCurrentPage] = useState(1);
+
+  const TRANSACTIONS_PER_PAGE = 10;
 
   const [busyId, setBusyId] = useState(null);
 
@@ -116,6 +122,28 @@ export default function ManagerDashboard() {
 
   };
 
+  const loadTransactions = () => {
+
+    api.allTransactions(100, 0)
+
+      .then((res) => {
+
+        setTransactions(res.transactions || []);
+
+        setTransactionCurrentPage(1);
+
+      })
+
+      .catch((e) => {
+
+        console.error(e);
+
+        setMsg({ type: 'error', message: e.message });
+
+      });
+
+  };
+
 
 
   useEffect(() => {
@@ -123,6 +151,8 @@ export default function ManagerDashboard() {
     loadAnalytics();
 
     loadPending();
+
+    loadTransactions();
 
   }, []);
 
@@ -381,6 +411,200 @@ export default function ManagerDashboard() {
               </tbody>
 
             </table>
+
+          )}
+
+        </div>
+
+      )}
+
+      {tab === 'transactions' && (
+
+        <div className="panel-card">
+
+          <div className="panel-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
+
+            <div>
+
+              <h3>All Transactions</h3>
+
+              <p className="section-text">View all water dispensing transactions from customers.</p>
+
+            </div>
+
+          </div>
+
+          <div className="table-wrap">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>Customer Name</th>
+
+                  <th>Email</th>
+
+                  <th>Phone</th>
+
+                  <th>Date & Time</th>
+
+                  <th>Volume (L)</th>
+
+                  <th>Cost (RWF)</th>
+
+                  <th>Status</th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                {(() => {
+
+                  const startIndex = (transactionCurrentPage - 1) * TRANSACTIONS_PER_PAGE;
+
+                  const paginatedTransactions = transactions.slice(startIndex, startIndex + TRANSACTIONS_PER_PAGE);
+
+                  return (
+
+                    <>
+
+                      {paginatedTransactions.map((t) => (
+
+                        <tr key={t.id}>
+
+                          <td><strong>{t.customer_name || 'Unknown'}</strong></td>
+
+                          <td>{t.customer_email || '-'}</td>
+
+                          <td>{t.customer_phone || '-'}</td>
+
+                          <td>{new Date(t.created_at).toLocaleString()}</td>
+
+                          <td>{(t.volume_ml / 1000).toLocaleString()}</td>
+
+                          <td>{t.cost_rwf.toLocaleString()}</td>
+
+                          <td>
+
+                            <span className={`badge badge-${
+
+                              t.status === 'completed' ? 'success' : 
+
+                              t.status === 'blocked' ? 'danger' : 
+
+                              'warning'
+
+                            }`}>
+
+                              {t.status === 'completed' ? '✓ Completed' : 
+
+                               t.status === 'blocked' ? '✗ Blocked' : 
+
+                               '⏳ Pending'}
+
+                            </span>
+
+                          </td>
+
+                        </tr>
+
+                      ))}
+
+                      {paginatedTransactions.length === 0 && (
+
+                        <tr>
+
+                          <td colSpan="7" className="text-center">No transactions found</td>
+
+                        </tr>
+
+                      )}
+
+                    </>
+
+                  );
+
+                })()}
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+          {/* Pagination Controls */}
+
+          {transactions.length > 0 && (
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-lg)', paddingTop: 'var(--space-lg)', borderTop: '1px solid var(--border-color)' }}>
+
+              <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+
+                Showing {Math.min((transactionCurrentPage - 1) * TRANSACTIONS_PER_PAGE + 1, transactions.length)} to {Math.min(transactionCurrentPage * TRANSACTIONS_PER_PAGE, transactions.length)} of {transactions.length} transactions
+
+              </div>
+
+              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+
+                <button 
+
+                  className="btn-secondary btn-sm" 
+
+                  onClick={() => setTransactionCurrentPage(prev => Math.max(1, prev - 1))}
+
+                  disabled={transactionCurrentPage === 1}
+
+                >
+
+                  ← Previous
+
+                </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+
+                  {Array.from({ length: Math.ceil(transactions.length / TRANSACTIONS_PER_PAGE) }, (_, i) => i + 1).map((page) => (
+
+                    <button 
+
+                      key={page}
+
+                      className={`btn-sm ${transactionCurrentPage === page ? 'btn-primary' : 'btn-secondary'}`}
+
+                      onClick={() => setTransactionCurrentPage(page)}
+
+                      style={{ minWidth: '2.5rem' }}
+
+                    >
+
+                      {page}
+
+                    </button>
+
+                  ))}
+
+                </div>
+
+                <button 
+
+                  className="btn-secondary btn-sm" 
+
+                  onClick={() => setTransactionCurrentPage(prev => Math.min(Math.ceil(transactions.length / TRANSACTIONS_PER_PAGE), prev + 1))}
+
+                  disabled={transactionCurrentPage === Math.ceil(transactions.length / TRANSACTIONS_PER_PAGE)}
+
+                >
+
+                  Next →
+
+                </button>
+
+              </div>
+
+            </div>
 
           )}
 

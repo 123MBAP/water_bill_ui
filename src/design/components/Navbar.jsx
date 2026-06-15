@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/useAuth';
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How It Works' },
-  { href: '#features', label: 'Features' },
-  { href: '#stats', label: 'Impact' },
+  { href: '#features',     label: 'Features' },
 ];
 
 export default function Navbar() {
@@ -56,7 +55,16 @@ export default function Navbar() {
           {/* Desktop Navigation Links */}
           <nav className="landing-nav-links" aria-label="Main Navigation">
             {NAV_LINKS.map((item) => (
-              <a key={item.href} href={item.href} onClick={close}>
+              <a
+                key={item.href}
+                href={item.href}
+                onClick={e => {
+                  close();
+                  const id = item.href.replace('#', '');
+                  const el = document.getElementById(id);
+                  if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+                }}
+              >
                 {item.label}
               </a>
             ))}
@@ -125,10 +133,18 @@ export default function Navbar() {
         
         <nav>
           {NAV_LINKS.map((item) => (
-            <a key={item.href} href={item.href} onClick={close}>
+            <a
+              key={item.href}
+              href={item.href}
+              onClick={e => {
+                close();
+                const id = item.href.replace('#', '');
+                const el = document.getElementById(id);
+                if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+              }}
+            >
               {item.label === 'How It Works' && '📖'}
               {item.label === 'Features' && '⚡'}
-              {item.label === 'Impact' && '🌍'}
               {' '}
               {item.label}
             </a>

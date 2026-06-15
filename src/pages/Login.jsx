@@ -1,31 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import WhatsAppButton from '../components/WhatsAppButton';
-import { Mail, Lock, Eye, EyeOff, LogIn, Droplet, ShieldAlert, ArrowLeft, Lightbulb, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, LogIn, ArrowLeft } from 'lucide-react';
+
+/* Rwanda / village water scenes from Unsplash */
+const SLIDES = [
+  { url: '/slides/slide1.png', caption: 'Clean water for every village in Rwanda' },
+  { url: '/slides/slide2.png', caption: 'Smart kiosks — pay only for what you use' },
+  { url: '/slides/slide3.png', caption: 'WASAC serves communities across Rwanda' },
+];
 
 const friendlyErrors = {
   ACCOUNT_PENDING_APPROVAL:
-    'Your account is waiting for manager approval. Please check back later or contact support.',
+    'Your account is waiting for manager approval. Please check back later.',
   ACCOUNT_REJECTED:
-    'Your registration was not approved. Contact Smart Water Bill support for assistance.',
+    'Your registration was not approved. Contact WASAC support.',
   INVALID_CREDENTIALS: 'Incorrect email or password. Please try again.',
   AUTH_SERVICE_UNAVAILABLE:
-    'Server cannot reach the database. Ask your administrator to check Supabase settings and restart the API.',
+    'Server cannot reach the database. Contact your administrator.',
   PROFILE_NOT_FOUND:
-    'Your login worked but the profile is missing. Run: npm run create-admin (in backend folder).',
+    'Login worked but profile is missing. Ask admin to run: npm run create-admin.',
 };
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email,        setEmail]        = useState('');
+  const [password,     setPassword]     = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const notice = location.state?.message;
+  const [error,        setError]        = useState('');
+  const [loading,      setLoading]      = useState(false);
+  const [slideIdx,     setSlideIdx]     = useState(0);
+  const [slideVisible, setSlideVisible] = useState(true);
+
+  const { login }  = useAuth();
+  const navigate   = useNavigate();
+  const location   = useLocation();
+  const notice     = location.state?.message;
+
+  /* Auto-advance photo slideshow */
+  useEffect(() => {
+    const id = setInterval(() => {
+      setSlideVisible(false);
+      setTimeout(() => {
+        setSlideIdx(i => (i + 1) % SLIDES.length);
+        setSlideVisible(true);
+      }, 500);
+    }, 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  const goSlide = (i) => {
+    setSlideVisible(false);
+    setTimeout(() => { setSlideIdx(i); setSlideVisible(true); }, 300);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,94 +71,89 @@ export default function Login() {
     }
   };
 
-  const handleQuickFill = (roleEmail, rolePassword) => {
-    setEmail(roleEmail);
-    setPassword(rolePassword);
-  };
-
   return (
     <div className="auth-page">
       <div className="auth-container">
-        {/* Info Column (Desktop only, styled in index.css) */}
+
+        {/* ── Left: photo + overlay ── */}
         <div className="auth-info-section">
+          {/* Sliding background photo */}
+          <img
+            key={slideIdx}
+            src={SLIDES[slideIdx].url}
+            alt="Rwanda water scene"
+            className="auth-photo-bg"
+            style={{ opacity: slideVisible ? 1 : 0 }}
+          />
+          <div className="auth-photo-overlay" />
+
+          {/* Brand top-left */}
           <div className="auth-info-header">
-            <div className="auth-info-logo">
-              <Droplet size={24} color="#ffffff" fill="#ffffff" />
-            </div>
+            <div className="auth-info-logo">💧</div>
             <span className="auth-info-logo-text">Smart Water Bill</span>
           </div>
 
-          <div className="auth-info-body">
-            <h2>Manage Your Water Consumption Smartly</h2>
-            <p>
-              An intelligent prepaid metering and leak detection system designed to give you complete transparency and control over your water resources.
-            </p>
+          {/* Bottom content */}
+          <div className="auth-info-content">
+            {/* Slide dots */}
+            <div className="auth-slide-dots">
+              {SLIDES.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`auth-slide-dot ${i === slideIdx ? 'active' : ''}`}
+                  onClick={() => goSlide(i)}
+                  aria-label={`Slide ${i + 1}`}
+                />
+              ))}
+            </div>
 
-            <div className="auth-features-list">
-              <div className="auth-feature-item">
-                <CheckCircle className="auth-feature-icon" size={18} />
-                <div className="auth-feature-text">
-                  <strong>Real-time Tracking</strong>
-                  <span>Monitor hourly usage and avoid unexpected water bill surprises.</span>
-                </div>
-              </div>
-
-              <div className="auth-feature-item">
-                <CheckCircle className="auth-feature-icon" size={18} />
-                <div className="auth-feature-text">
-                  <strong>Prepaid Card System</strong>
-                  <span>Recharge your water meter card instantly online and pay only for what you consume.</span>
-                </div>
-              </div>
-
-              <div className="auth-feature-item">
-                <CheckCircle className="auth-feature-icon" size={18} />
-                <div className="auth-feature-text">
-                  <strong>AI Leak Detection</strong>
-                  <span>Get real-time notification alerts if abnormal flow rates are detected at your meter.</span>
-                </div>
+            <div className="auth-info-body">
+              <h2>Smart Water<br />for Rwanda</h2>
+              <p style={{ opacity: slideVisible ? 1 : 0, transition: 'opacity 0.5s' }}>
+                {SLIDES[slideIdx].caption}
+              </p>
+              <div className="auth-badge-row">
+                <span>💧 Prepaid</span>
+                <span>📊 Real-time</span>
+                <span>🔔 Alerts</span>
               </div>
             </div>
-          </div>
 
-          <div className="auth-info-footer">
-            &copy; 2026 WASAC Utility Management Portal. All rights reserved.
+            <div className="auth-info-footer">
+              &copy; 2026 WASAC Smart Water Billing Portal — Rwanda
+            </div>
           </div>
         </div>
 
-        {/* Form Column */}
+        {/* ── Right: form ── */}
         <div className="auth-form-section">
           <div className="auth-form-header">
-            <h1>Welcome Back</h1>
-            <p>Sign in to access your prepaid water dashboard</p>
+            <h1>Welcome back 👋</h1>
+            <p>Sign in to your WASAC water account</p>
           </div>
 
-          {/* Success Notice */}
           {notice && (
-            <div className="success-banner" style={{ margin: '0 0 var(--space-lg) 0' }}>
-              <CheckCircle size={18} />
-              <span>{notice}</span>
+            <div className="success-banner" style={{ marginBottom: '1.25rem' }}>
+              ✅ {notice}
             </div>
           )}
 
-          {/* Error Alert */}
           {error && (
-            <div className="alert-banner" style={{ margin: '0 0 var(--space-lg) 0' }}>
-              <ShieldAlert size={18} />
-              <span>{error}</span>
+            <div className="alert-banner" style={{ marginBottom: '1.25rem' }}>
+              ⚠️ {error}
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Email Address</label>
               <div className="auth-input-wrapper">
-                <Mail className="auth-input-icon" size={18} />
+                <span className="auth-input-icon" style={{ fontSize: '1rem' }}>✉️</span>
                 <input
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={e => setEmail(e.target.value)}
                   required
                   placeholder="name@wasac.rw"
                   autoComplete="email"
@@ -142,11 +164,11 @@ export default function Login() {
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Password</label>
               <div className="auth-input-wrapper">
-                <Lock className="auth-input-icon" size={18} />
+                <span className="auth-input-icon" style={{ fontSize: '1rem' }}>🔒</span>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
                   autoComplete="current-password"
@@ -154,46 +176,32 @@ export default function Login() {
                 <button
                   type="button"
                   className="auth-password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
+                  onClick={() => setShowPassword(v => !v)}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                 </button>
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="auth-submit-btn"
-              disabled={loading}
-            >
+            <button type="submit" className="auth-submit-btn" disabled={loading}>
               {loading ? (
-                <>
-                  <span className="spinner" style={{ marginRight: '8px' }}>⏳</span>
-                  <span>Signing in...</span>
-                </>
+                <><span>⏳</span><span>Signing in…</span></>
               ) : (
-                <>
-                  <LogIn size={18} />
-                  <span>Sign In</span>
-                </>
+                <><LogIn size={17} /><span>Sign In</span></>
               )}
             </button>
           </form>
 
-          {/* Link to Registration */}
-          <div style={{ marginTop: 'var(--space-xl)', textAlign: 'center' }}>
-            <p className="section-text" style={{ fontSize: '0.9rem' }}>
-              New to Smart Water Bill?{' '}
-              <Link to="/register" style={{ fontWeight: 600, color: 'var(--primary-light)' }}>
-                Create an account
-              </Link>
-            </p>
+          <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.88rem', color: '#6b7280' }}>
+            New to Smart Water Bill?{' '}
+            <Link to="/register" style={{ fontWeight: 700, color: '#4361ee', textDecoration: 'none' }}>
+              Create an account
+            </Link>
           </div>
 
-          {/* Back to Home */}
-          <div style={{ marginTop: 'var(--space-md)', textAlign: 'center' }}>
+          <div style={{ marginTop: '1rem', textAlign: 'center' }}>
             <Link to="/" className="auth-back-link">
-              <ArrowLeft size={16} />
+              <ArrowLeft size={15} />
               <span>Back to Home</span>
             </Link>
           </div>
