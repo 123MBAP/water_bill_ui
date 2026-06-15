@@ -1,6 +1,5 @@
 import Navbar from '../design/components/Navbar';
 import HeroCarousel from '../design/components/HeroCarousel';
-import StatsSection from '../design/components/StatsSection';
 import HowItWorks from '../design/components/HowItWorks';
 import ServicesSection from '../design/components/ServicesSection';
 import CTASection from '../design/components/CTASection';
@@ -13,7 +12,7 @@ export default function Landing() {
       <Navbar />
       <main id="home">
         <HeroCarousel />
-        <StatsSection />
+        <div style={{ height: '2.5rem' }} />
         <HowItWorks />
         <ServicesSection />
         <CTASection />

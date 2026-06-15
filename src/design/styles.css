@@ -26,8 +26,8 @@
 @keyframes shine { from { transform: translateX(-120%) rotate(20deg); } to { transform: translateX(250%) rotate(20deg); } }
 
 /* Landing page background polish */
-.bg-softwhite { background: #f7fbff; }
-.text-darknavy { color: #0b1b33; }
+.bg-softwhite { background: #f2f4f8; }
+.text-darknavy { color: #0d1b2a; }
 
 /* Optional: ensure sticky nav looks clean */
 .sticky { position: sticky; }

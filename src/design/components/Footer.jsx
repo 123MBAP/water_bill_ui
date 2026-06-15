@@ -1,25 +1,42 @@
+import { useState } from 'react';
+
 const footerLinks = {
   Product: [
-    { label: 'Pay Bill', href: '#pay' },
-    { label: 'Bill History', href: '#history' },
-    { label: 'Reminders', href: '#reminders' },
-    { label: 'Receipts', href: '#receipts' },
+    { label: 'Pay Bill',      href: '#pay' },
+    { label: 'Bill History',  href: '#history' },
+    { label: 'Reminders',     href: '#reminders' },
+    { label: 'Receipts',      href: '#receipts' },
   ],
   Company: [
-    { label: 'About Us', href: '#about' },
-    { label: 'Services', href: '#services' },
-    { label: 'Contact', href: '#contact' },
-    { label: 'Blog', href: '#blog' },
+    { label: 'About Us',  href: '#about' },
+    { label: 'Services',  href: '#services' },
+    { label: 'Contact',   href: '#contact' },
+    { label: 'Blog',      href: '#blog' },
   ],
   Legal: [
-    { label: 'Privacy Policy', href: '#privacy' },
+    { label: 'Privacy Policy',   href: '#privacy' },
     { label: 'Terms of Service', href: '#terms' },
-    { label: 'Cookie Policy', href: '#cookies' },
-    { label: 'Support', href: '#support' },
+    { label: 'Cookie Policy',    href: '#cookies' },
+    { label: 'Support',          href: '#support' },
   ],
 };
 
 export default function Footer() {
+  const [subEmail,     setSubEmail]     = useState('');
+  const [subDone,      setSubDone]      = useState(false);
+  const [subError,     setSubError]     = useState('');
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!subEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(subEmail)) {
+      setSubError('Please enter a valid email address.');
+      return;
+    }
+    setSubError('');
+    setSubDone(true);
+    setSubEmail('');
+  };
+
   return (
     <footer className="bg-darknavy text-white">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:py-16 sm:px-6 lg:px-8">
@@ -36,7 +53,6 @@ export default function Footer() {
             <p className="mt-4 max-w-xs text-sm leading-7 text-slate-400">
               Prepaid water billing — recharge, track usage, and pay securely anytime.
             </p>
-
             <div className="mt-6 flex gap-3">
               {['twitter', 'facebook', 'instagram'].map((s) => (
                 <a key={s} href={`#${s}`} aria-label={s} className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-slate-400 transition-all duration-200 hover:bg-primary hover:text-white">
@@ -64,15 +80,52 @@ export default function Footer() {
           ))}
         </div>
 
+        {/* Subscribe box */}
         <div className="mt-10 sm:mt-14 rounded-3xl bg-white/5 border border-white/10 p-6 sm:p-8 text-center md:text-left md:flex md:items-center md:justify-between gap-6">
           <div className="shrink-0">
             <h4 className="text-base font-bold text-white">Stay up to date</h4>
             <p className="mt-1 text-sm text-slate-400">Get bill reminders and product news in your inbox.</p>
           </div>
-          <form className="mt-4 flex flex-col sm:flex-row gap-2 md:mt-0 md:min-w-[320px]" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="you@example.com" className="flex-1 min-w-0 rounded-full border border-white/15 bg-white/10 px-5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:border-primary focus:ring-2 focus:ring-primary/30" />
-            <button type="submit" className="btn-shine shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-blue-500">Subscribe</button>
-          </form>
+
+          {subDone ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 10,
+              background: 'rgba(16,185,129,0.15)', border: '1px solid rgba(16,185,129,0.35)',
+              borderRadius: 50, padding: '10px 22px', color: '#6ee7b7',
+              fontWeight: 700, fontSize: '0.88rem', marginTop: '1rem',
+            }}>
+              ✅ You are subscribed! We will send updates to your inbox.
+            </div>
+          ) : (
+            <form
+              className="mt-4 flex flex-col sm:flex-row gap-2 md:mt-0 md:min-w-[320px]"
+              onSubmit={handleSubscribe}
+            >
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
+                <input
+                  type="email"
+                  value={subEmail}
+                  onChange={e => { setSubEmail(e.target.value); setSubError(''); }}
+                  placeholder="you@example.com"
+                  className="flex-1 min-w-0 rounded-full border bg-white/10 px-5 py-2.5 text-sm text-white placeholder:text-slate-500 outline-none focus:ring-2"
+                  style={{
+                    borderColor: subError ? '#f87171' : 'rgba(255,255,255,0.15)',
+                    boxShadow: subError ? '0 0 0 2px rgba(248,113,113,0.2)' : undefined,
+                  }}
+                />
+                {subError && (
+                  <span style={{ fontSize: '0.74rem', color: '#f87171', paddingLeft: 8 }}>{subError}</span>
+                )}
+              </div>
+              <button
+                type="submit"
+                className="btn-shine shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:bg-blue-500"
+                style={{ alignSelf: 'flex-start' }}
+              >
+                Subscribe
+              </button>
+            </form>
+          )}
         </div>
       </div>
 

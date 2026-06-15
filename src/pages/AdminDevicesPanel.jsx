@@ -72,14 +72,9 @@ export default function AdminDevicesPanel({ onStatus }) {
     <div className="panel-card">
       {/* Header Section */}
       <div className="panel-heading" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-md)', flexWrap: 'wrap' }}>
-        <div>
-          <h3>Hardware Device Management</h3>
-          <p className="section-text" style={{ marginTop: 'var(--space-xs)' }}>
-            Register and manage ESP32 water dispensing hardware devices
-          </p>
-        </div>
+        <h3>Hardware Device Management</h3>
         <button className="btn-primary btn-sm" onClick={() => setOpen(true)}>
-          + Add Hardware Device
+          + Add Device
         </button>
       </div>
 
@@ -212,9 +207,7 @@ export default function AdminDevicesPanel({ onStatus }) {
                     placeholder="e.g., ESP32_WASAC_001"
                     required
                   />
-                  <div className="profile-meta" style={{ fontSize: '0.7rem', marginTop: 'var(--space-xs)' }}>
-                    Must match the device ID configured in your ESP32 firmware
-                  </div>
+                  <small style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Must match <code>DEVICE_ID</code> in your ESP32 firmware (e.g. <code>ESP32-001</code>)</small>
                 </label>
 
                 <label>
@@ -245,19 +238,8 @@ export default function AdminDevicesPanel({ onStatus }) {
                     value={form.flow_rate_threshold}
                     onChange={(e) => setForm({ ...form, flow_rate_threshold: parseInt(e.target.value) || 50 })}
                   />
-                  <div className="profile-meta" style={{ fontSize: '0.7rem', marginTop: 'var(--space-xs)' }}>
-                    Maximum flow rate before leak detection triggers (default: 50 L/min)
-                  </div>
+                  <small style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>Leak detection triggers above this value (default: 50)</small>
                 </label>
-
-                <div className="success-banner" style={{ fontSize: '0.75rem', padding: 'var(--space-sm)' }}>
-                  <strong>ℹ️ Setup Instructions:</strong>
-                  <ol style={{ marginTop: 'var(--space-sm)', marginLeft: 'var(--space-lg)', lineHeight: '1.6' }}>
-                    <li>Enter the device details above</li>
-                    <li>After creation, click "Register" on the device</li>
-                    <li>Tap an RFID card on the device reader to complete pairing</li>
-                  </ol>
-                </div>
 
                 <div className="modal-actions">
                   <button type="button" className="btn-secondary" onClick={() => setOpen(false)}>

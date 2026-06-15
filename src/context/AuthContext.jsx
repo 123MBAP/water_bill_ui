@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '../services/api';
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 const AUTH_CACHE_KEY = 'auth-cache';
 
 function readCachedAuth() {
@@ -89,11 +89,22 @@ export function AuthProvider({ children }) {
     setProfile(null);
   };
 
+  const refreshProfile = async () => {
+    try {
+      const data = await api.me();
+      setUser(data.user);
+      setProfile(data.profile);
+      writeCachedAuth(data.user, data.profile);
+    } catch {
+      // silently ignore
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, profile, loading, login, register, logout, refreshProfile, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+// useAuth is in ./useAuth.js — keeping it separate prevents Vite Fast Refresh full reloads

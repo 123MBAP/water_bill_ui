@@ -11,12 +11,12 @@
   --border-light: rgba(255, 255, 255, 0.05);
 
   /* Landing Page Colors */
-  --landing-bg: #f7fbff;
-  --landing-text: #0b1b33;
-  --landing-text-secondary: #475569;
-  --landing-border: #e2e8f0;
+  --landing-bg: #f2f4f8;
+  --landing-text: #0d1b2a;
+  --landing-text-secondary: #4b5563;
+  --landing-border: #dde3ee;
   --landing-surface: #ffffff;
-  --landing-surface-alt: #f8fafc;
+  --landing-surface-alt: #eaecf2;
 
   /* Typography */
   --text-primary: #f3f4f6;
@@ -97,44 +97,53 @@ body {
   scroll-margin-top: 72px;
 }
 
-/* Tighter vertical rhythm */
+/* Card motion — lift on hover */
+.landing-page .reveal {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.landing-page .reveal:hover {
+  transform: translateY(-5px) scale(1.015);
+  box-shadow: 0 12px 32px rgba(67, 97, 238, 0.13) !important;
+}
+
+/* Tight vertical rhythm */
 .landing-page #stats,
 .landing-page #features,
 .landing-page #how-it-works {
-  padding-top: 2.25rem !important;
-  padding-bottom: 2.25rem !important;
+  padding-top: 1.5rem !important;
+  padding-bottom: 1.5rem !important;
 }
 
 .landing-page .landing-hero-wrap {
-  padding-top: 1.25rem !important;
-  padding-bottom: 0.5rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.25rem !important;
 }
 
 @media (min-width: 1024px) {
   .landing-page .landing-hero-wrap {
-    padding-top: 2rem !important;
-    padding-bottom: 0.75rem !important;
+    padding-top: 1.25rem !important;
+    padding-bottom: 0.25rem !important;
   }
 }
 
 .landing-page .landing-hero-dots {
-  padding-bottom: 1.5rem !important;
+  padding-bottom: 0.75rem !important;
 }
 
 .landing-page .landing-cta-section {
-  padding-top: 2.5rem !important;
-  padding-bottom: 2.5rem !important;
+  padding-top: 1.75rem !important;
+  padding-bottom: 1.75rem !important;
 }
 
 .landing-page footer .mx-auto {
-  padding-top: 2rem !important;
-  padding-bottom: 2rem !important;
+  padding-top: 1.25rem !important;
+  padding-bottom: 1.25rem !important;
 }
 
 .landing-page .landing-stats-card,
 .landing-page #features .reveal,
 .landing-page #how-it-works .reveal {
-  padding: 1.25rem !important;
+  padding: 1rem !important;
 }
 
 .landing-page #how-it-works h2 {
@@ -154,8 +163,8 @@ body {
   position: sticky;
   top: 0;
   z-index: 80;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px);
+  background: rgba(242, 244, 248, 0.94);
+  backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--landing-border);
 }
 
